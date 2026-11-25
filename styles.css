@@ -293,3 +293,15 @@ td:first-child { color: var(--text); font-weight: 600; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
 }
+
+/* Keep Hugeicons and their labels on a shared, predictable baseline. */
+.icon { display: inline-flex; width: 1em; height: 1em; flex: 0 0 auto; align-items: center; justify-content: center; line-height: 1; vertical-align: middle; }
+.button, .text-link, .game-stats span, .jam-meta span { display: inline-flex; align-items: center; }
+.button, .text-link { gap: 7px; }
+.game-stats span, .jam-meta span { gap: 4px; white-space: nowrap; }
+.text-link { min-height: 24px; }
+.eyebrow:has(.icon) { display: inline-flex; align-items: center; gap: 7px; }
+.nav-icon { height: 20px; flex: 0 0 18px; align-items: center; justify-content: center; }
+.save-mini { display: inline-grid; place-items: center; }
+.mobile-nav a span:first-child { display: inline-flex; width: 20px; height: 20px; align-items: center; justify-content: center; line-height: 1; }
+
