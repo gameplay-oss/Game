@@ -41,14 +41,14 @@ function navLink(route, label, iconName, active = false) {
 function shell(content) {
   const route = state.route;
   const navKey = route.startsWith("detail/") || route.startsWith("play/") ? "discover" : route;
-  const sectionName = ({ discover: "Discover", search: "Search games", jam: "Game jams", create: "Create", studio: "Creator studio", library: "Your library", creator: "Creator profile" })[navKey] || "Discover";
+  const sectionName = ({ discover: "Discover", search: "Search games", jam: "More games", create: "Create", studio: "Creator studio", library: "Your library", creator: "Creator profile" })[navKey] || "Discover";
   return `<div class="layout">
     <aside class="sidebar" aria-label="Main navigation">
       <a class="brand" href="#/discover"><span class="brand-mark">${icon("sparkles")}</span><span>ARCADE ATLAS<small>GAMES WORTH GETTING LOST IN</small></span></a>
       <p class="nav-label">Explore</p><nav class="nav-list">
         ${navLink("discover", "Discover", "home-01", navKey === "discover")}
         ${navLink("search", "Search games", "search-01", navKey === "search")}
-        ${navLink("jam", "Game jams", "calendar-03", navKey === "jam")}
+        ${navLink("jam", "More games", "game-controller-03", navKey === "jam")}
       </nav>
       <p class="nav-label">Make & play</p><nav class="nav-list">
         ${navLink("create", "Create a game", "add-01", navKey === "create")}
@@ -56,7 +56,7 @@ function shell(content) {
         ${navLink("studio", "Creator studio", "dashboard-browsing", navKey === "studio")}
       </nav>
       <div class="sidebar-spacer"></div>
-      <a href="#/jam" class="jam-callout"><span class="eyebrow">${icon("sparkles")} Now playing</span><strong>Small Worlds, Big Feelings</strong><p>Our latest community jam is live. There’s still time to join in.</p><span class="text-link">Explore the jam ${icon("arrow-up-right-01")}</span></a>
+      <a href="${games[0].url}" target="_blank" rel="noopener noreferrer" class="jam-callout"><span class="eyebrow">${icon("sparkles")} FEATURED ON FIFTH DOOR</span><strong>${escapeHTML(games[0].title)}</strong><p>${escapeHTML(games[0].description)}</p><span class="text-link">Play now ${icon("arrow-up-right-01")}</span></a>
       <div class="sidebar-user"><span class="avatar">AJ</span><span><strong>Alex Johnson</strong><small>Player profile · Demo</small></span><button class="icon-button" data-action="profile" aria-label="Open creator profile">${icon("more-horizontal")}</button></div>
     </aside>
     <main class="main">
@@ -69,12 +69,12 @@ function shell(content) {
 
 function gameCard(game) {
   const isSaved = savedIds().includes(game.id);
-  return `<article class="game-card"><button class="game-art-button" data-action="detail" data-id="${game.id}" aria-label="View ${escapeHTML(game.title)}">${art(game, game.genre)}</button><div class="game-info"><div class="game-info-top"><div><h3 class="game-title">${escapeHTML(game.title)}</h3><p class="game-creator">by ${escapeHTML(game.creator)}</p></div><button class="save-mini ${isSaved ? "saved" : ""}" data-action="save" data-id="${game.id}" aria-label="${isSaved ? "Remove from" : "Save to"} library">${icon("heart")}</button></div><div class="game-stats"><span>${icon("star")} ${game.rating}</span><span>${icon("view")} ${game.plays} plays</span><span>${icon("clock-01")} ${game.time}</span></div></div></article>`;
+  return `<article class="game-card"><button class="game-art-button" data-action="detail" data-id="${game.id}" aria-label="View ${escapeHTML(game.title)}">${art(game, game.genre)}</button><div class="game-info"><div class="game-info-top"><div><h3 class="game-title"><a href="${game.url}" target="_blank" rel="noopener noreferrer">${escapeHTML(game.title)}</a></h3><p class="game-creator">by ${escapeHTML(game.creator)}</p></div><button class="save-mini ${isSaved ? "saved" : ""}" data-action="save" data-id="${game.id}" aria-label="${isSaved ? "Remove from" : "Save to"} library">${icon("heart")}</button></div><div class="game-stats"><span>${icon("arrow-up-01")} ${game.upvotes} upvotes</span><span>${icon("chat-01")} ${game.comments} comments</span></div></div></article>`;
 }
 
 function featuredGame() {
   const game = games[0];
-  return `<section class="hero" aria-labelledby="featured-title"><div class="hero-copy"><span class="eyebrow">${icon("sparkles")} THIS WEEK'S FEATURED GAME</span><h1 id="featured-title">A little <span>light</span> in the afterglow.</h1><p class="hero-desc">${escapeHTML(game.description)} Just one more run. You know how it goes.</p><div class="hero-meta"><strong>${game.title}</strong><span>·</span><span>${game.genre}</span><span>·</span><span>by ${game.creator}</span></div><div class="hero-actions"><button class="button" data-action="play" data-id="${game.id}">${icon("play")} Play now</button><button class="button ghost" data-action="detail" data-id="${game.id}">Explore game</button></div></div><div class="hero-visual" aria-hidden="true"><img src="${game.image}" alt="" loading="eager" decoding="async"/></div></section>`;
+  return `<section class="hero" aria-labelledby="featured-title"><div class="hero-copy"><span class="eyebrow">${icon("sparkles")} FEATURED ON FIFTH DOOR</span><h1 id="featured-title">${escapeHTML(game.title)}</h1><p class="hero-desc">${escapeHTML(game.description)}</p><div class="hero-meta"><strong>${escapeHTML(game.genre)}</strong><span>·</span><span>by ${escapeHTML(game.creator)}</span></div><div class="hero-actions"><a class="button" href="${game.url}" target="_blank" rel="noopener noreferrer">${icon("play")} Play on Fifth Door</a><button class="button ghost" data-action="detail" data-id="${game.id}">Explore game</button></div></div><div class="hero-visual" aria-hidden="true"><img src="${game.image}" alt="" loading="eager" decoding="async"/></div></section>`;
 }
 
 function gameGrid(list) { return `<div class="game-grid">${list.map(gameCard).join("")}</div>`; }
@@ -84,15 +84,15 @@ function discoverPage() {
   const recent = playedIds().map(findGame).filter(Boolean).slice(0, 4);
   return `${featuredGame()}
     ${hasHistory ? `<section><div class="section-head"><div><h2>Pick up where you left off</h2><p>Your latest games are right here.</p></div><a class="text-link" href="#/library">View history ${icon("arrow-up-right-01")}</a></div>${gameGrid(recent)}</section>` : ""}
-    <section><div class="section-head"><div><h2>Trending in the little-big world</h2><p>The games people can’t stop talking about.</p></div><a class="text-link" href="#/search">See all games ${icon("arrow-up-right-01")}</a></div>${gameGrid(games.slice(1, 5))}</section>
-    <section><div class="section-head"><div><h2>Find your kind of fun</h2><p>A good game is whatever you feel like playing.</p></div></div><div class="genre-layout">${["Arcade", "Puzzle", "Adventure", "Strategy", "Platformer", "Simulation", "Casual", "Racing"].map((name) => { const sample = games.find((game) => game.genre === name); return `<button class="genre-tile" style="--genre-image:url('${sample.image}')" data-action="genre" data-genre="${name}"><strong>${name}</strong><small>${games.filter((game) => game.genre === name).length} little worlds</small></button>`; }).join("")}</div></section>
-    <section><div class="section-head"><div><h2>Just landed</h2><p>Freshly published, ready to be found.</p></div><a class="text-link" href="#/search">Browse new games ${icon("arrow-up-right-01")}</a></div>${gameGrid(games.slice(5, 9))}</section>
+    <section><div class="section-head"><div><h2>Launched this week</h2><p>New games from Fifth Door creators.</p></div><a class="text-link" href="#/search">See all games ${icon("arrow-up-right-01")}</a></div>${gameGrid(games.slice(1, 5))}</section>
+    <section><div class="section-head"><div><h2>Find your kind of fun</h2><p>A good game is whatever you feel like playing.</p></div></div><div class="genre-layout">${genres.slice(1).map((name) => { const sample = games.find((game) => game.genre === name); return `<button class="genre-tile" style="--genre-image:url('${sample.image}')" data-action="genre" data-genre="${name}"><strong>${escapeHTML(name)}</strong><small>${games.filter((game) => game.genre === name).length} games</small></button>`; }).join("")}</div></section>
+    <section><div class="section-head"><div><h2>More launches</h2><p>Open the original game page on Fifth Door.</p></div><a class="text-link" href="#/search">Browse the catalog ${icon("arrow-up-right-01")}</a></div>${gameGrid(games.slice(5, 9))}</section>
     <section><div class="section-head"><div><h2>Creators to know</h2><p>Good ideas come from good people.</p></div><a class="text-link" href="#/creator">Meet the community ${icon("arrow-up-right-01")}</a></div><div class="creator-grid">${creators.map(creatorCard).join("")}</div></section>
-    <section><div class="section-head"><div><h2>Make something with us</h2><p>Little experiments are welcome here.</p></div><a class="text-link" href="#/jam">See all jams ${icon("arrow-up-right-01")}</a></div><div class="jam-grid">${jams.slice(0, 2).map(jamCard).join("")}</div></section>`;
+    <section><div class="section-head"><div><h2>Featured games</h2><p>Quick links back to Fifth Door.</p></div><a class="text-link" href="#/jam">See more ${icon("arrow-up-right-01")}</a></div><div class="jam-grid">${jams.slice(0, 2).map(jamCard).join("")}</div></section>`;
 }
 
 function jamCard(jam) {
-  return `<article class="jam-card ${jam.color}"><img class="jam-cover" src="${jam.image}" alt="" loading="lazy" decoding="async"/><span class="jam-state">${jam.state}</span><span class="jam-icon">${icon(jam.icon)}</span><h3>${jam.title}</h3><div class="jam-meta"><span>${icon("clock-01")} ${jam.days}</span><span>${icon("sparkles")} ${jam.entries ? `${jam.entries} entries` : "Be the first"}</span></div></article>`;
+  return `<a class="jam-card ${jam.color}" href="${jam.url}" target="_blank" rel="noopener noreferrer"><img class="jam-cover" src="${jam.image}" alt="" loading="lazy" decoding="async"/><span class="jam-state">${jam.state}</span><span class="jam-icon">${icon(jam.icon)}</span><h3>${escapeHTML(jam.title)}</h3><div class="jam-meta"><span>${icon("arrow-up-01")} ${jam.entries} upvotes</span><span>${icon("arrow-up-right-01")} ${jam.days}</span></div></a>`;
 }
 
 function creatorCard(creator) {
@@ -106,12 +106,12 @@ function searchPage() {
     const matchesQuery = `${game.title} ${game.creator} ${game.genre} ${game.description}`.toLowerCase().includes(state.query.toLowerCase());
     return matchesQuery && (state.filter === "All games" || game.genre === state.filter);
   });
-  if (state.sort === "Most Played") filtered = [...filtered].sort((a, b) => Number(b.plays.replace("k", "")) - Number(a.plays.replace("k", "")));
-  if (state.sort === "Highest Rated") filtered = [...filtered].sort((a, b) => Number(b.rating) - Number(a.rating));
-  if (state.sort === "Recently Added") filtered = [...filtered].reverse();
+  if (state.sort === "Most Upvoted") filtered = [...filtered].sort((a, b) => b.upvotes - a.upvotes);
+  if (state.sort === "Most Discussed") filtered = [...filtered].sort((a, b) => b.comments - a.comments);
+  if (state.sort === "Alphabetical") filtered = [...filtered].sort((a, b) => a.title.localeCompare(b.title));
   const filterList = ["All games", ...genres.slice(1)];
   return `<span class="eyebrow">THE WHOLE ARCADE, AT YOUR PACE</span><h1 class="page-title">Find your next favorite.</h1><p class="page-subtitle">Search by title, creator, genre, or even the feeling you’re after.</p><div style="margin-top:21px" class="search-box">${icon("search-01")}<label class="sr-only" for="game-search">Search games, creators, and genres</label><input id="game-search" type="search" value="${escapeHTML(state.query)}" placeholder="Try ‘cozy’, ‘space’, or a creator name…" autocomplete="off"/><kbd>↵</kbd></div>
-    <div class="toolbar"><div class="genre-strip" role="group" aria-label="Filter by genre">${filterList.map((genre) => `<button class="genre-chip ${state.filter === genre ? "active" : ""}" data-action="filter" data-genre="${genre}">${genre}</button>`).join("")}</div><label class="sr-only" for="sort-games">Sort games</label><select id="sort-games" class="select">${["Recommended", "Most Played", "Trending", "Recently Added", "Highest Rated"].map((sort) => `<option ${state.sort === sort ? "selected" : ""}>${sort}</option>`).join("")}</select></div>
+    <div class="toolbar"><div class="genre-strip" role="group" aria-label="Filter by genre">${filterList.map((genre) => `<button class="genre-chip ${state.filter === genre ? "active" : ""}" data-action="filter" data-genre="${genre}">${escapeHTML(genre)}</button>`).join("")}</div><label class="sr-only" for="sort-games">Sort games</label><select id="sort-games" class="select">${["Recommended", "Most Upvoted", "Most Discussed", "Alphabetical"].map((sort) => `<option ${state.sort === sort ? "selected" : ""}>${sort}</option>`).join("")}</select></div>
     <p class="result-count">${filtered.length} ${filtered.length === 1 ? "game" : "games"}${state.query ? ` for “${escapeHTML(state.query)}”` : " to explore"}</p>${filtered.length ? gameGrid(filtered) : `<div class="empty-state"><h3>No games found just yet.</h3><p>Try a different search or clear your filters to see the full arcade.</p><button class="button secondary" data-action="clear-filters">Clear filters</button></div>`}`;
 }
 
@@ -119,8 +119,8 @@ function detailPage(id) {
   const game = findGame(id);
   if (!game) return `<div class="empty-state"><h3>That game wandered off.</h3><p>Browse the arcade and find something new to play.</p><a class="button" href="#/discover">Back to discover</a></div>`;
   const related = games.filter((item) => item.id !== game.id && item.genre === game.genre).slice(0, 3);
-  return `<section class="detail-hero"><div class="detail-art">${art(game, "GAME PREVIEW")}</div><div class="detail-copy"><span class="eyebrow">${game.genre} · ${game.time.toUpperCase()} PLAY</span><h1>${escapeHTML(game.title)}</h1><p>Created by <button class="text-link" data-action="creator">${escapeHTML(game.creator)}</button></p><p>${escapeHTML(game.description)}</p><div class="detail-actions"><button class="button" data-action="play" data-id="${game.id}">${icon("play")} Play game</button><button class="button secondary" data-action="save" data-id="${game.id}">${icon("bookmark-01")} ${savedIds().includes(game.id) ? "Saved" : "Save to library"}</button><button class="button secondary" data-action="share" data-id="${game.id}">${icon("share-01")} Share</button></div><div class="detail-stats"><span><strong>${game.plays}</strong>plays</span><span><strong>${icon("star")} ${game.rating}</strong>community rating</span><span><strong>${game.time}</strong>average session</span></div></div></section>
-    <div class="detail-lower"><section class="panel"><h3>A little about this game</h3><p>${escapeHTML(game.description)} Built for short, satisfying sessions, with just enough room to find your own rhythm. Jump in, see how far you get, and come back for another round whenever you like.</p><div class="control-list"><div class="control-row"><span>Steer left</span><kbd><i class="hgi-stroke hgi-arrow-left-01" aria-hidden="true"></i></kbd></div><div class="control-row"><span>Steer right</span><kbd><i class="hgi-stroke hgi-arrow-right-01" aria-hidden="true"></i></kbd></div><div class="control-row"><span>Pause / resume</span><kbd>Space</kbd></div></div></section><section class="panel"><h3>Made by ${escapeHTML(game.creator)}</h3><p>Independent creator making small, thoughtful games for the browser. Every game here is a work in progress worth playing.</p><div style="margin-top:14px"><button class="button secondary small" data-action="follow" data-name="${escapeHTML(game.creator)}">Follow creator</button></div></section></div>
+  return `<section class="detail-hero"><div class="detail-art">${art(game, "GAME PREVIEW")}</div><div class="detail-copy"><span class="eyebrow">${escapeHTML(game.genre)} · FIFTH DOOR</span><h1>${escapeHTML(game.title)}</h1><p>Created by <button class="text-link" data-action="creator">${escapeHTML(game.creator)}</button></p><p>${escapeHTML(game.description)}</p><div class="detail-actions"><a class="button" href="${game.url}" target="_blank" rel="noopener noreferrer">${icon("play")} Play on Fifth Door</a><button class="button secondary" data-action="save" data-id="${game.id}">${icon("bookmark-01")} ${savedIds().includes(game.id) ? "Saved" : "Save to library"}</button><button class="button secondary" data-action="share" data-id="${game.id}">${icon("share-01")} Share</button></div><div class="detail-stats"><span><strong>${game.upvotes}</strong>upvotes</span><span><strong>${game.comments}</strong>comments</span><span><strong>Fifth Door</strong>source</span></div></div></section>
+    <div class="detail-lower"><section class="panel"><h3>About this game</h3><p>${escapeHTML(game.description)}</p><a class="button secondary small" href="${game.url}" target="_blank" rel="noopener noreferrer">View the original listing ${icon("arrow-up-right-01")}</a></section><section class="panel"><h3>Made by ${escapeHTML(game.creator)}</h3><p>Visit the original game page on Fifth Door for the creator’s listing and game details.</p><div style="margin-top:14px"><a class="button secondary small" href="${game.url}" target="_blank" rel="noopener noreferrer">Open creator’s game ${icon("arrow-up-right-01")}</a></div></section></div>
     ${related.length ? `<section><div class="section-head"><div><h2>More in ${game.genre}</h2><p>If this felt right, these might too.</p></div></div>${gameGrid(related)}</section>` : ""}`;
 }
 
@@ -160,7 +160,7 @@ function studioPage() {
 }
 
 function communityPage() {
-  return `<span class="eyebrow">MAKE A LITTLE NOISE TOGETHER</span><h1 class="page-title">Game jams & good ideas.</h1><p class="page-subtitle">Short, friendly creative challenges for makers of all experience levels. Pick a prompt, make something small, and see what everyone else dreams up.</p><section><div class="section-head"><div><h2>Open calls</h2><p>There’s no wrong way to join in.</p></div></div><div class="jam-grid">${jams.map(jamCard).join("")}</div></section><section class="panel" style="margin-top:17px"><div class="section-head" style="margin:0 0 15px"><div><h2>How a jam works</h2><p>Three steps, no pressure.</p></div></div><div class="genre-layout"><div><span class="eyebrow">01</span><h3 style="font:600 13px 'Space Grotesk'">Pick the prompt</h3><p>Every jam starts with one theme. Take it somewhere unexpected.</p></div><div><span class="eyebrow">02</span><h3 style="font:600 13px 'Space Grotesk'">Make a little game</h3><p>Make it your own. Solo projects and first attempts are welcome.</p></div><div><span class="eyebrow">03</span><h3 style="font:600 13px 'Space Grotesk'">Share when ready</h3><p>Show your work, cheer on other creators, and enjoy the weird ideas.</p></div><div><span class="eyebrow">A NOTE</span><h3 style="font:600 13px 'Space Grotesk'">Community safety</h3><p>Public submissions require moderation and reporting tools before launch.</p></div></div></section><div class="demo-note"><span>${icon("information-circle")}</span><span>These are sample jam listings. Submission and public community features are not connected.</span></div>`;
+  return `<span class="eyebrow">FIFTH DOOR CATALOG</span><h1 class="page-title">More games to explore.</h1><p class="page-subtitle">Browse the games, covers, and original play pages from Fifth Door.</p><section><div class="section-head"><div><h2>Launched this week</h2><p>Each card links to its original game.</p></div></div>${gameGrid(games.slice(1))}</section>`;
 }
 
 function creatorPage() {
