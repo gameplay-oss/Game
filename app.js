@@ -69,7 +69,7 @@ function shell(content) {
 
 function gameCard(game) {
   const isSaved = savedIds().includes(game.id);
-  return `<article class="game-card"><button class="game-art-button" data-action="detail" data-id="${game.id}" aria-label="View ${escapeHTML(game.title)}">${art(game, game.genre)}</button><div class="game-info"><div class="game-info-top"><div><h3 class="game-title"><a href="${game.url}" target="_blank" rel="noopener noreferrer">${escapeHTML(game.title)}</a></h3><p class="game-creator">by ${escapeHTML(game.creator)}</p></div><button class="save-mini ${isSaved ? "saved" : ""}" data-action="save" data-id="${game.id}" aria-label="${isSaved ? "Remove from" : "Save to"} library">${icon("heart")}</button></div><div class="game-stats"><span>${icon("arrow-up-01")} ${game.upvotes} upvotes</span><span>${icon("chat-01")} ${game.comments} comments</span></div></div></article>`;
+  return `<article class="game-card"><button class="game-art-button" data-action="detail" data-id="${game.id}" aria-label="View ${escapeHTML(game.title)}">${art(game)}</button><div class="game-info"><div class="game-info-top"><div><h3 class="game-title"><a href="${game.url}" target="_blank" rel="noopener noreferrer">${escapeHTML(game.title)}</a></h3><p class="game-creator">by ${escapeHTML(game.creator)}</p></div><button class="save-mini ${isSaved ? "saved" : ""}" data-action="save" data-id="${game.id}" aria-label="${isSaved ? "Remove from" : "Save to"} library">${icon("heart")}</button></div><div class="game-stats"><span>${icon("arrow-up-01")} ${game.upvotes} upvotes</span><span>${icon("chat-01")} ${game.comments} comments</span></div></div></article>`;
 }
 
 function featuredGame() {
