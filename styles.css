@@ -306,3 +306,19 @@ td:first-child { color: var(--text); font-weight: 600; }
 .save-mini { display: inline-grid; place-items: center; }
 .mobile-nav a span:first-child { display: inline-flex; width: 20px; height: 20px; align-items: center; justify-content: center; line-height: 1; }
 
+/* Use the game cover as the full card surface, with readable details over it. */
+.game-card { position: relative; aspect-ratio: 1.08; }
+.game-art-button { position: absolute; inset: 0; height: 100%; }
+.game-art { position: absolute; inset: 0; height: 100%; aspect-ratio: auto; }
+.game-art::before { background: linear-gradient(180deg, rgb(8 9 12 / 12%) 20%, rgb(8 9 12 / 10%) 42%, rgb(8 9 12 / 88%) 100%); }
+.game-info { position: absolute; z-index: 2; right: 0; bottom: 0; left: 0; padding: 14px; background: linear-gradient(180deg, transparent, rgb(8 9 12 / 74%) 42%, rgb(8 9 12 / 92%)); }
+.game-info-top { align-items: flex-end; }
+.game-creator { color: #d0d3dc; }
+.game-stats { margin-top: 9px; color: #e2e4e9; }
+.save-mini { border-color: rgb(255 255 255 / 42%); background: rgb(10 12 16 / 58%); color: #fff; }
+.art-label { top: 11px; bottom: auto; }
+
+@media (max-width: 600px) {
+  .game-info { padding: 10px; }
+}
+
